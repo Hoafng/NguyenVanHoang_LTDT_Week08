@@ -3,8 +3,17 @@ import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-web';
 import { TextInput } from "react-native-paper";
 export default function Screen03({navigation,route}) {
-    const name = route.params.name;
-    const [email,setEmail] = useState('');
+    const [name,setName] = useState("")
+    const [job, setJob] = useState("")
+    const [isUpdate, setIsUpdate] = useState(false)
+    useEffect(()=>{
+        setName(route.params.name)
+    }, [route.params.name])
+    useEffect(() => {
+        setJob(route.params.job)
+        setIsUpdate(route.params.isUpdate)
+    }, [JSON.stringify(route.params)])
+
     return (
         <View style={styles.container}>           
             <View style={styles.header}>
@@ -24,16 +33,16 @@ export default function Screen03({navigation,route}) {
             <SafeAreaView>
                 <TextInput
                     placeholder='input your job'
-                    style={styles.txtEmail}
-                    onChangeText={setEmail}
-                    value={email}
+                    style={styles.txtJob}
+                    onChangeText={setJob}
+                    value={job}
                     left={<TextInput.Icon icon="clipboard-list-outline" />}
                     keyboardType='default'
                 />
             </SafeAreaView>
             <TouchableOpacity style={styles.buttonStart} 
                 onPress={() =>{
-                    navigation.navigate('Screen01');
+                    navigation.navigate("Screen02", {job : {job : job, value : true}})
                 }}
                 >
                 <Text style={styles.txtButton} >Finish &rarr;</Text>
@@ -69,7 +78,7 @@ const styles = StyleSheet.create({
         textAlign:'center',
         color:'purple',
         
-    },txtEmail:{
+    },txtJob:{
         borderColor:'black',
         borderWidth:'1px',
         width:'300px',

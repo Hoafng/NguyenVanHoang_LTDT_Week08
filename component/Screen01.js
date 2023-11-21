@@ -22,7 +22,7 @@ export default function Screen01({navigation}) {
             </SafeAreaView>
             <TouchableOpacity style={styles.buttonStart} 
                 onPress={() =>{
-                    navigation.navigate('Screen02',{name});
+                    navigation.navigate('Screen02',{name:name,job:''});
                 }}
                 >
                 <Text style={styles.txtButton} >Get Started &rarr;</Text>

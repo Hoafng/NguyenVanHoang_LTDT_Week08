@@ -2,26 +2,48 @@ import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ScrollView, 
 import React, { useEffect, useState } from 'react';
 import {TextInput } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
-export default function Screen02({navigation,route}) {
+import { createStore } from 'redux';
+const Screen02= ({navigation,route}) =>{
    
-    const name = route.params.name;
+    const [name, setName] = useState("")
     const [search,setSearch] = useState('');
     const [checkboxes, setCheckboxes] = useState([
-        { label: 'To check email', value: false },
-        { label: 'UI task web page', value: false },
-        { label: 'Learn javascript basic', value: false },
-        { label: 'Learn HTML Advance', value: false },
-        { label: 'Medical App UI', value: false },
-        { label: 'Learn Java', value: false },
+        { job: 'To check email', value: false },
+        { job: 'UI task web page', value: false },
+        { job: 'Learn javascript basic', value: false },
+        { job: 'Learn HTML Advance', value: false },
+        { job: 'Medical App UI', value: false },
+        { job: 'Learn Java', value: false },
      
       ]);
-
+      useEffect(() => {
+        setName(route.params.name)
+    }, [route.params.name])
+      useEffect(() => {
+        if (route.params.job.job == '') {
+            store.dispatch({type : 'INSERT', job : route.params.job.job})
+        }
+    }, [JSON.stringify(route.params.job)])
+      function jobReducer(state = checkboxes, action) {
+        switch (action.type) {
+            case 'INSERT':
+                return [{ job: action.job, value: true }, ...state]
+            case 'UPDATE' :
+                navigation.navigate("Screen03", { job: action.job, isUpdate: true })
+                return state.filter(o => o.job !== action.job)
+            default:
+                return state
+        }
+    }
     
-    const handleCheckboxChange = (index) => {
+      let store = createStore(jobReducer)
+
+      store.subscribe(() => setCheckboxes(store.getState()))
+    function handleCheckboxChange(index) {
         const updatedCheckboxes = [...checkboxes];
         updatedCheckboxes[index].value = !updatedCheckboxes[index].value;
         setCheckboxes(updatedCheckboxes);
-      }
+    }
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -55,9 +77,9 @@ export default function Screen02({navigation,route}) {
                             value={checkbox.value}
                             onValueChange={() => handleCheckboxChange(index)}
                         />
-                        <Text style={{fontSize:15,left:30,width:150}}>{checkbox.label}</Text>
+                        <Text style={{fontSize:15,left:30,width:150}}>{checkbox.job}</Text>
                         <TouchableOpacity onPress={() =>{
-                            navigation.navigate('Screen01');
+                           store.dispatch({type: 'UPDATE',job: job.job})
                         }}>
                         <Icon style={{position:'absolute',left:100}} name="edit" size={15} color="#900" />
                         </TouchableOpacity>
@@ -68,7 +90,7 @@ export default function Screen02({navigation,route}) {
             </SafeAreaView> 
             <TouchableOpacity style={styles.buttonStart} 
                 onPress={() =>{
-                    navigation.navigate('Screen03',{name});
+                    navigation.navigate('Screen03',{name:name,job:checkboxes.value==true?checkboxes.job:'',isUpdate:true});
                 }}
                 >
                 <Text style={styles.txtButton}>+</Text>
@@ -77,7 +99,7 @@ export default function Screen02({navigation,route}) {
         </View>
     );
 }
-
+export default Screen02
 const styles = StyleSheet.create({
     container: {
         flex: 1,
